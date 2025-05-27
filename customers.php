@@ -24,6 +24,9 @@ include './database/customers-fetch.php';
     <main>
         <h1>Customers</h1>
         <p>Here is a list of all customers in the system.</p>
+        <div class="add-customer">
+            <button onclick="window.location.href='add_customer.php'" class="add-btn">Add New Customer</button>
+        </div>
         <div class="table-wrapper">
             <table class="table-row">
                 <thead>
@@ -34,6 +37,7 @@ include './database/customers-fetch.php';
                         <th>Address</th>
                         <th>State</th>
                         <th>Country</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,6 +52,10 @@ include './database/customers-fetch.php';
                         <td><?php echo htmlspecialchars($customer['addressLine1']); ?></td>
                         <td><?php echo htmlspecialchars($customer['state']); ?></td>
                         <td><?php echo htmlspecialchars($customer['country']); ?></td>
+                        <td class="actions">
+                            <button onclick="window.location.href='edit_customer.php?id=<?php echo $customer['customerNumber']; ?>'" class="edit-btn">Edit</button>
+                            <button onclick="if(confirm('Are you sure you want to delete this customer?')) window.location.href='delete_customer.php?id=<?php echo $customer['customerNumber']; ?>'" class="delete-btn">Delete</button>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
