@@ -7,43 +7,91 @@ if(!isset($_SESSION['email'])){
     exit();
 }
 
+// Fetch all employees for the sales rep dropdown
+$employee_sql = "SELECT employeeNumber, CONCAT(firstName, ' ', lastName, ' - ', jobTitle) as employeeName FROM employees WHERE jobTitle LIKE '%Sales%'";
+$employee_result = $conn->query($employee_sql);
+$salesReps = [];
+if ($employee_result) {
+    while ($row = $employee_result->fetch_assoc()) {
+        $salesReps[] = $row;
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the next available customer number
-    $sql = "SELECT MAX(customerNumber) as maxNum FROM customers";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
-    $nextCustomerNumber = $row['maxNum'] + 1;
+    try {
+        $conn->begin_transaction();
 
-    // Prepare the SQL query
-    $sql = "INSERT INTO customers (
-        customerNumber, customerName, contactLastName, contactFirstName,
-        phone, addressLine1, addressLine2, city, state, postalCode,
-        country, salesRepEmployeeNumber, creditLimit
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Validate required fields
+        $required_fields = ['customerName', 'contactLastName', 'contactFirstName', 'phone', 
+                          'addressLine1', 'city', 'country', 'creditLimit'];
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                throw new Exception("$field is required");
+            }
+        }
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("issssssssssis",
-        $nextCustomerNumber,
-        $_POST['customerName'],
-        $_POST['contactLastName'],
-        $_POST['contactFirstName'],
-        $_POST['phone'],
-        $_POST['addressLine1'],
-        $_POST['addressLine2'],
-        $_POST['city'],
-        $_POST['state'],
-        $_POST['postalCode'],
-        $_POST['country'],
-        $_POST['salesRepEmployeeNumber'],
-        $_POST['creditLimit']
-    );
+        // Get the next available customer number
+        $sql = "SELECT MAX(customerNumber) as maxNum FROM customers";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $nextCustomerNumber = $row['maxNum'] + 1;
 
-    if ($stmt->execute()) {
+        // Set default values for optional fields
+        $salesRepEmployeeNumber = !empty($_POST['salesRepEmployeeNumber']) ? $_POST['salesRepEmployeeNumber'] : null;
+        $addressLine2 = !empty($_POST['addressLine2']) ? $_POST['addressLine2'] : null;
+        $state = !empty($_POST['state']) ? $_POST['state'] : null;
+        $postalCode = !empty($_POST['postalCode']) ? $_POST['postalCode'] : null;
+
+        // Prepare the SQL query
+        $sql = "INSERT INTO customers (
+            customerNumber, customerName, contactLastName, contactFirstName,
+            phone, addressLine1, addressLine2, city, state, postalCode,
+            country, salesRepEmployeeNumber, creditLimit
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        $stmt->bind_param("issssssssssis",
+            $nextCustomerNumber,
+            $_POST['customerName'],
+            $_POST['contactLastName'],
+            $_POST['contactFirstName'],
+            $_POST['phone'],
+            $_POST['addressLine1'],
+            $addressLine2,
+            $_POST['city'],
+            $state,
+            $postalCode,
+            $_POST['country'],
+            $salesRepEmployeeNumber,
+            $_POST['creditLimit']
+        );
+
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed: " . $stmt->error);
+        }
+
+        // Verify the customer was added
+        $verify_sql = "SELECT customerNumber FROM customers WHERE customerNumber = ?";
+        $verify_stmt = $conn->prepare($verify_sql);
+        $verify_stmt->bind_param("i", $nextCustomerNumber);
+        $verify_stmt->execute();
+        $verify_result = $verify_stmt->get_result();
+        
+        if ($verify_result->num_rows === 0) {
+            throw new Exception("Failed to add customer");
+        }
+
+        $conn->commit();
         $_SESSION['success_message'] = "Customer added successfully!";
         header("Location: customers.php");
         exit();
-    } else {
-        $error = "Error adding customer: " . $conn->error;
+    } catch (Exception $e) {
+        $conn->rollback();
+        $error = "Error adding customer: " . $e->getMessage();
     }
 }
 ?>
@@ -119,8 +167,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-group">
-                <label>Sales Rep Employee Number:</label>
-                <input type="number" name="salesRepEmployeeNumber">
+                <label>Sales Representative:</label>
+                <select name="salesRepEmployeeNumber">
+                    <option value="">Select a Sales Representative</option>
+                    <?php foreach ($salesReps as $rep): ?>
+                    <option value="<?php echo htmlspecialchars($rep['employeeNumber']); ?>">
+                        <?php echo htmlspecialchars($rep['employeeName']); ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="form-group">
