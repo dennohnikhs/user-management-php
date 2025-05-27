@@ -22,34 +22,60 @@ include './database/totals.php';
     include './includes/header.php';
     ?>
     <main>
-        <div class="welcome-text">
-            <h1>Welcome to the Management System</h1>
-            <p>
-                This is a management system for managing customers, products, and orders. It provides an overview of the
-                total number of customers, products, orders, and total revenue generated.
-            </p>
-        </div>
+        <div class="dashboard">
+            <div class="welcome-section">
+                <h1>Welcome to the Management System</h1>
+                <p class="welcome-description">
+                    A comprehensive platform for managing your business operations efficiently.
+                    Track customers, products, orders, and revenue all in one place.
+                </p>
+            </div>
 
-        <div class="totals">
-            <div class="total-display">
-                <h2>Total Customers</h2>
-                <p><?php echo $totalCustomers; ?></p>
-            </div>
-            <div class="total-display">
-                <h2>Total Products</h2>
-                <p><?php echo $totalProducts; ?></p>
-            </div>
-            <div class="total-display">
-                <h2>Total Orders</h2>
-                <p><?php echo $totalOrders; ?></p>
-            </div>
-            <div class="total-display">
-                <h2>Total Revenue</h2>
-                <p><?php echo number_format($totalRevenue, 2); ?></p>
-            </div>
-            <div class="total-display">
-                <h2>Total Employees</h2>
-                <p><?php echo $totalEmployees; ?></p>
+            <div class="stats-grid">
+                <div class="stat-card customers">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h2>Total Customers</h2>
+                        <p class="stat-number"><?php echo number_format($totalCustomers); ?></p>
+                        <span class="stat-label">Registered Customers</span>
+                    </div>
+                </div>
+
+                <div class="stat-card products">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-content">
+                        <h2>Total Products</h2>
+                        <p class="stat-number"><?php echo number_format($totalProducts); ?></p>
+                        <span class="stat-label">Active Products</span>
+                    </div>
+                </div>
+
+                <div class="stat-card orders">
+                    <div class="stat-icon">🛍️</div>
+                    <div class="stat-content">
+                        <h2>Total Orders</h2>
+                        <p class="stat-number"><?php echo number_format($totalOrders); ?></p>
+                        <span class="stat-label">Processed Orders</span>
+                    </div>
+                </div>
+
+                <div class="stat-card revenue">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-content">
+                        <h2>Total Revenue</h2>
+                        <p class="stat-number">$<?php echo number_format($totalRevenue, 2); ?></p>
+                        <span class="stat-label">Generated Revenue</span>
+                    </div>
+                </div>
+
+                <div class="stat-card employees">
+                    <div class="stat-icon">👨‍💼</div>
+                    <div class="stat-content">
+                        <h2>Total Employees</h2>
+                        <p class="stat-number"><?php echo number_format($totalEmployees); ?></p>
+                        <span class="stat-label">Active Employees</span>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
