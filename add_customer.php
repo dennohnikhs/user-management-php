@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
 
     if ($stmt->execute()) {
+        $_SESSION['success_message'] = "Customer added successfully!";
         header("Location: customers.php");
         exit();
     } else {
@@ -49,89 +50,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Customer</title>
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
+
 <body>
     <?php include './includes/header.php'; ?>
-    
+
     <main>
         <h1>Add New Customer</h1>
         <?php if (isset($error)): ?>
-            <div class="error"><?php echo $error; ?></div>
+        <div class="error"><?php echo $error; ?></div>
         <?php endif; ?>
-        
+
         <form method="POST" class="customer-form">
             <div class="form-group">
                 <label>Customer Name:</label>
                 <input type="text" name="customerName" required>
             </div>
-            
+
             <div class="form-group">
                 <label>Contact Last Name:</label>
                 <input type="text" name="contactLastName" required>
             </div>
-            
+
             <div class="form-group">
                 <label>Contact First Name:</label>
                 <input type="text" name="contactFirstName" required>
             </div>
-            
+
             <div class="form-group">
                 <label>Phone:</label>
                 <input type="text" name="phone" required>
             </div>
-            
+
             <div class="form-group">
                 <label>Address Line 1:</label>
                 <input type="text" name="addressLine1" required>
             </div>
-            
+
             <div class="form-group">
                 <label>Address Line 2:</label>
                 <input type="text" name="addressLine2">
             </div>
-            
+
             <div class="form-group">
                 <label>City:</label>
                 <input type="text" name="city" required>
             </div>
-            
+
             <div class="form-group">
                 <label>State:</label>
                 <input type="text" name="state">
             </div>
-            
+
             <div class="form-group">
                 <label>Postal Code:</label>
                 <input type="text" name="postalCode">
             </div>
-            
+
             <div class="form-group">
                 <label>Country:</label>
                 <input type="text" name="country" required>
             </div>
-            
+
             <div class="form-group">
                 <label>Sales Rep Employee Number:</label>
                 <input type="number" name="salesRepEmployeeNumber">
             </div>
-            
+
             <div class="form-group">
                 <label>Credit Limit:</label>
                 <input type="number" step="0.01" name="creditLimit" required>
             </div>
-            
+
             <div class="form-actions">
                 <button type="submit">Add Customer</button>
                 <button type="button" onclick="window.location.href='customers.php'">Cancel</button>
             </div>
         </form>
     </main>
-    
+
     <?php include './includes/footer.php'; ?>
 </body>
+
 </html>

@@ -23,6 +23,22 @@ include './database/customers-fetch.php';
 
     <main>
         <h1>Customers</h1>
+        <?php if (isset($_SESSION['success_message'])): ?>
+            <div class="success-message">
+                <?php 
+                    echo $_SESSION['success_message'];
+                    unset($_SESSION['success_message']); 
+                ?>
+            </div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error_message'])): ?>
+            <div class="error">
+                <?php 
+                    echo $_SESSION['error_message'];
+                    unset($_SESSION['error_message']); 
+                ?>
+            </div>
+        <?php endif; ?>
         <p>Here is a list of all customers in the system.</p>
         <div class="add-customer">
             <button onclick="window.location.href='add_customer.php'" class="add-btn">Add New Customer</button>
