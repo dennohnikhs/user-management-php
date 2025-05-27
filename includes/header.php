@@ -1,19 +1,13 @@
 <?php
+session_start();
 
 if(!isset($_SESSION['email'])){
-    // send to logout.php
-    header("Location:logout.php");
-
+    header("Location: /management-system/login.php");
+    exit();
 }
-
 ?>
 
 <nav class="navbar">
-    <?php
-    // Include the header file 
-    include './assets/js/scripts.php';
-    include './assets/css/styles.css';
-    ?>
     <button class="hamburger" onclick="toggleMenu()">
         <span class="bar"></span>
         <span class="bar"></span>

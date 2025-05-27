@@ -1,4 +1,5 @@
 <?php
+session_start();
 include './database/connection.php';
 include './database/employees-fetch.php';
 ?>
