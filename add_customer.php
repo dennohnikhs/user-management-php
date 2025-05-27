@@ -21,12 +21,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $conn->begin_transaction();
 
-        // Validate required fields
+        // Validate required fields and field lengths
         $required_fields = ['customerName', 'contactLastName', 'contactFirstName', 'phone', 
                           'addressLine1', 'city', 'country', 'creditLimit'];
         foreach ($required_fields as $field) {
             if (empty($_POST[$field])) {
                 throw new Exception("$field is required");
+            }
+        }
+
+        // Validate field lengths
+        $max_lengths = [
+            'customerName' => 50,
+            'contactLastName' => 50,
+            'contactFirstName' => 50,
+            'phone' => 50,
+            'addressLine1' => 50,
+            'addressLine2' => 50,
+            'city' => 50,
+            'state' => 50,
+            'postalCode' => 15,
+            'country' => 50
+        ];
+
+        foreach ($max_lengths as $field => $max_length) {
+            if (!empty($_POST[$field]) && strlen($_POST[$field]) > $max_length) {
+                throw new Exception("$field cannot be longer than $max_length characters");
             }
         }
 
@@ -118,52 +138,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST" class="customer-form">
             <div class="form-group">
                 <label>Customer Name:</label>
-                <input type="text" name="customerName" required>
+                <input type="text" name="customerName" maxlength="50" required>
             </div>
 
             <div class="form-group">
                 <label>Contact Last Name:</label>
-                <input type="text" name="contactLastName" required>
+                <input type="text" name="contactLastName" maxlength="50" required>
             </div>
 
             <div class="form-group">
                 <label>Contact First Name:</label>
-                <input type="text" name="contactFirstName" required>
+                <input type="text" name="contactFirstName" maxlength="50" required>
             </div>
 
             <div class="form-group">
                 <label>Phone:</label>
-                <input type="text" name="phone" required>
+                <input type="text" name="phone" maxlength="50" required>
             </div>
 
             <div class="form-group">
                 <label>Address Line 1:</label>
-                <input type="text" name="addressLine1" required>
+                <input type="text" name="addressLine1" maxlength="50" required>
             </div>
 
             <div class="form-group">
                 <label>Address Line 2:</label>
-                <input type="text" name="addressLine2">
+                <input type="text" name="addressLine2" maxlength="50">
             </div>
 
             <div class="form-group">
                 <label>City:</label>
-                <input type="text" name="city" required>
+                <input type="text" name="city" maxlength="50" required>
             </div>
 
             <div class="form-group">
                 <label>State:</label>
-                <input type="text" name="state">
+                <input type="text" name="state" maxlength="50">
             </div>
 
             <div class="form-group">
                 <label>Postal Code:</label>
-                <input type="text" name="postalCode">
+                <input type="text" name="postalCode" maxlength="15">
             </div>
 
             <div class="form-group">
                 <label>Country:</label>
-                <input type="text" name="country" required>
+                <input type="text" name="country" maxlength="50" required>
             </div>
 
             <div class="form-group">
